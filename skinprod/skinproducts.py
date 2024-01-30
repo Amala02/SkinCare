@@ -1,8 +1,8 @@
 import streamlit as st
 import pandas as pd
 from sklearn.tree import DecisionTreeClassifier
-data_skin_orig=pd.read_csv('skinprod\\ingreds.csv')
-data_skin=pd.read_csv('skinprod\\cosmetics_clean.csv')
+data_skin_orig=pd.read_csv('skinprod\ingreds.csv')
+data_skin=pd.read_csv('skinprod\cosmetics_clean.csv')
 Names=[]
 Labels=[]
 for index,row in data_skin.iterrows():
