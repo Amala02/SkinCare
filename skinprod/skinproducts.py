@@ -8,6 +8,13 @@ ingreds_path = os.path.join(current_dir, "ingreds.csv")
 data_skin_orig=pd.read_csv(ingreds_path)
 cos_path = os.path.join(current_dir, "cosmetics_clean.csv")
 data_skin=pd.read_csv(cos_path)
+Age=[]
+for index, row in data_skin_orig.iterrows():
+  if(('paraben' in row['Ingredients'].lower())or('phthalates' in row['Ingredients'].lower())):
+    Age.append(1)
+  else:
+    Age.append(0)
+
 Names=[]
 Labels=[]
 for index,row in data_skin.iterrows():
@@ -27,10 +34,13 @@ for index,row in data_skin.iterrows():
 Names_orig=data_skin['Name']
 data_skin['Label']=Labels
 data_skin['Name']=Names
+data_skin['Age']=Age
 model = DecisionTreeClassifier()
 model.fit(data_skin.drop('Name', axis=1), data_skin['Name'])
 
 st.title("Skincare Questionnaire")
+
+age=st.radio("Are you:", ['Under 20', '20+'])
 
 st.header("1. Select your most apt skin type:")
 skintype=st.radio("", ['Oily', 'Combination', 'Dry', 'Normal'])
@@ -98,7 +108,7 @@ if st.button("Submit"):
     if Sun:
         selected_products.append(5)
   
-
+    
     Suggestions=[]
     if(darkcircle=="Darkness move on stretching?"):
       for index,row in data_skin_orig.iterrows():
@@ -131,7 +141,10 @@ if st.button("Submit"):
           if('wrinkle' in row['Name'])and (row['Oily']==1):
             st.write(row['Name'])
 
-      
+    if(age=='Under 20'):
+      age=0
+    else:
+      age=1
     for i in range(len(selected_products)):
         user_input = pd.DataFrame({
         'Label': [selected_products[i]],
@@ -139,7 +152,8 @@ if st.button("Submit"):
         'Dry': [Dry],
         'Normal': [Normal],
         'Oily': [Oily],
-        'Sensitive': [Sensitivity] })
+        'Sensitive': [Sensitivity],
+        'Age':[age]})
         predicted_product = model.predict(user_input)
         Suggestions.append(products[selected_products[i]]+":"+Names_orig[predicted_product[0]])
     #Suggestions=set(Suggestions)
